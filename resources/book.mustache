@@ -2,11 +2,37 @@
 
 <div class="container-fluid">
   <div class="row-fluid">
-    <div class="span8 offset2">
+    <div class="span4 offset2">
       <dl>
+        {{#isbn}}
         <dt>ISBN</dt>
         <dd>{{isbn}}</dd>
+        {{/isbn}}
+
+        {{#title}}
+        <dt>Title</dt>
+        <dd>{{title}}</dd>
+        {{/title}}
+
+        {{#author}}
+        <dt>Author</dt>
+        <dd>{{author}}</dd>
+        {{/author}}
+
+        {{#publisher}}
+        <dt>Publisher</dt>
+        <dd>{{publisher}}</dd>
+        {{/publisher}}
       </dl>
+    </div>
+    <div class="span4">
+      <p>
+        {{#image}}
+          <img src="{{image}}"
+          alt="{{title}}"
+          title="Image from Flipkart for {{title}}"/>
+        {{/image}}
+      </p>
     </div>
   </div>
 </div>

@@ -8,11 +8,11 @@
 
 (defn front-page
   []
-  (mus/render-file "frontpage" {:title "isbn.net.in"}))
+  (mus/render-file "frontpage" {:pageTitle "isbn.net.in"}))
 
 (defn about-page
   []
-  (mus/render-file "about" {:title "About isbn.net.in"}))
+  (mus/render-file "about" {:pageTitle "About isbn.net.in"}))
 
 (defroutes app-routes
   (GET "/" [] (front-page))
