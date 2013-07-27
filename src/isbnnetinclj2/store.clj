@@ -26,14 +26,16 @@
     (if (empty? text)
       (Integer/MAX_VALUE)
       (try
-        (Float/parseFloat
-         (last
-          (re-seq #"\d+(?:\.\d+)?"
-           (string/trim
-            (string/replace
-             (str text)
-             ","
-             "")))))
+        (int
+         (* 100
+            (Float/parseFloat
+             (last
+              (re-seq #"\d+(?:\.\d+)?"
+                      (string/trim
+                       (string/replace
+                        (str text)
+                        ","
+                        "")))))))
         (catch Exception x
           (do
             (log/error (str x))
@@ -61,7 +63,10 @@
      :image (get-in (pick-from-content
                      content
                      [:div#mprodimg-id :img])
-                    [:attrs :data-src])}))
+                    [:attrs :data-src])
+     :priceFlipkart (parse-price-from-content
+                      content
+                      [:div.prices :span.fk-font-finalprice])}))
 
 
 (defn book-page

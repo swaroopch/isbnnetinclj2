@@ -45,4 +45,20 @@
   </div>
 </div>
 
+<div class="container-fluid">
+  <div class="row-fluid">
+    <div class="span4 offset2">
+      <h3>Prices</h3>
+      <table class="table table-bordered table-hover">
+        {{#priceFlipkart}}
+          <tr>
+            <th>Flipkart</th>
+            <td>{{priceFlipkart}}</td>
+          </tr>
+        {{/priceFlipkart}}
+      </table>
+    </div>
+  </div>
+</div>
+
 {{>footer}}
