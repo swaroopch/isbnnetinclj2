@@ -1,10 +1,15 @@
 (ns isbnnetinclj2.handler
   (:use compojure.core)
   (:require [compojure.handler :as handler]
-            [compojure.route :as route]))
+            [compojure.route :as route]
+            [stencil.core :as mus]))
+
+(defn front-page-content
+  []
+  (mus/render-file "frontpage" {:title "isbn.net.in"}))
 
 (defroutes app-routes
-  (GET "/" [] "Hello World")
+  (GET "/" [] (front-page-content))
   (route/resources "/")
   (route/not-found "Not Found"))
 
