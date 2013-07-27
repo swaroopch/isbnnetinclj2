@@ -1,6 +1,6 @@
 (ns isbnnetinclj2.handler
-  (:use compojure.core)
-  (:require [compojure.handler :as handler]
+  (:require [compojure.core :refer :all]
+            [compojure.handler :as handler]
             [compojure.route :as route]
             [stencil.core :as mus]))
 
