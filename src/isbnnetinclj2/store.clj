@@ -1,9 +1,35 @@
 (ns isbnnetinclj2.store
   (:require [taoensso.timbre :as log]
-            [isbnnetinclj2.utils :as utils]
-            [net.cgrand.enlive-html :as html]
             [clojure.string :as string]
-            [stencil.core :as mus]))
+            [clojure.core.cache :as cache]
+            [net.cgrand.enlive-html :as html]
+            [clj-time.core :as time]
+            [stencil.core :as mus]
+            [isbnnetinclj2.utils :as utils]
+            [isbnnetinclj2.mongo :as mongo]))
+
+
+(defonce book-data-cache
+  (atom (cache/ttl-cache-factory {} :ttl (* 60 60 24))))
+
+
+(defonce book-in-progress-lock
+  (atom {}))
+
+
+(defn is-book-in-progress
+  [isbn]
+  (get @book-in-progress-lock isbn))
+
+
+(defn set-book-in-progress
+  [isbn]
+  (swap! book-in-progress-lock assoc isbn true))
+
+
+(defn done-book-in-progress
+  [isbn]
+  (swap! book-in-progress-lock dissoc isbn))
 
 
 (defn pick-from-content
@@ -26,16 +52,14 @@
     (if (empty? text)
       (Integer/MAX_VALUE)
       (try
-        (int
-         (* 100
-            (Float/parseFloat
-             (last
-              (re-seq #"\d+(?:\.\d+)?"
-                      (string/trim
-                       (string/replace
-                        (str text)
-                        ","
-                        "")))))))
+        (Float/parseFloat
+         (last
+          (re-seq #"\d+(?:\.\d+)?"
+                  (string/trim
+                   (string/replace
+                    (str text)
+                    ","
+                    "")))))
         (catch Exception x
           (do
             (log/error (str x))
@@ -49,7 +73,6 @@
    isbn))
 
 
-;;; TODO Convert keys to keywords
 (defn pick-flipkart-values
   [content]
   (apply
@@ -63,27 +86,28 @@
 
 (defn fetch-flipkart
   [isbn]
-  (log/debug (format "Fetching flipkart for %s" isbn))
+  (log/debug isbn "Fetching flipkart")
   (let [url (flipkart-url isbn)
         content (utils/fetch-page url)
         flipkart-values (pick-flipkart-values content)]
-    {:isbn isbn
-     :title (parse-text-from-content
+    {:url url
+     :content content
+     :price (parse-price-from-content
              content
-             [:div.mprod-summary-title :h1 html/content])
-     :imageSource "Flipkart"
-     :imageLink url
-     :image (get-in (pick-from-content
-                     content
-                     [:div#mprodimg-id :img])
-                    [:attrs :data-src])
-     :priceFlipkart (parse-price-from-content
-                      content
-                      [:div.prices :span.fk-font-finalprice])
-     :author (get flipkart-values "Author")
-     :publisher (get flipkart-values "Publisher")
-     :year (get flipkart-values "Publication Year")
-     :binding (get flipkart-values "Binding")}))
+             [:div.prices :span.fk-font-finalprice])
+     :info {:title (parse-text-from-content
+                    content
+                    [:div.mprod-summary-title :h1 html/content])
+            :imageSource "Flipkart"
+            :imageLink url
+            :image (get-in (pick-from-content
+                            content
+                            [:div#mprodimg-id :img])
+                           [:attrs :data-src])
+            :author (get flipkart-values "Author")
+            :publisher (get flipkart-values "Publisher")
+            :year (get flipkart-values "Publication Year")
+            :binding (get flipkart-values "Binding")}}))
 
 
 (defn infibeam-url
@@ -95,12 +119,14 @@
 
 (defn fetch-infibeam
   [isbn]
-  (log/debug (format "Fetching infibeam for %s" isbn))
+  (log/debug isbn  "Fetching infibeam")
   (let [url (infibeam-url isbn)
         content (utils/fetch-page url)]
-    {:priceInfibeam (parse-price-from-content
-                     content
-                     [:span.infiPrice])}))
+    {:url url
+     :content content
+     :price (parse-price-from-content
+             content
+             [:span.infiPrice])}))
 
 
 (defn homeshop18-url
@@ -113,12 +139,14 @@
 
 (defn fetch-homeshop18
   [isbn]
-  (log/debug (format "Fetching homeshop18 for %s" isbn))
+  (log/debug isbn "Fetching homeshop18")
   (let [url (homeshop18-url isbn)
         content (utils/fetch-page url)]
-    {:priceHomeshop18 (parse-price-from-content
-                       content
-                       [:span#hs18Price])}))
+    {:url url
+     :content content
+     :price (parse-price-from-content
+             content
+             [:span#hs18Price])}))
 
 
 (defn snapdeal-url
@@ -130,12 +158,14 @@
 
 (defn fetch-snapdeal
   [isbn]
-  (log/debug (format "Fetching snapdeal for %s" isbn))
+  (log/debug isbn "Fetching snapdeal")
   (let [url (snapdeal-url isbn)
         content (utils/fetch-page url)]
-    {:priceSnapdeal (parse-price-from-content
-                       content
-                       [:div.product_price])}))
+    {:url url
+     :content content
+     :price (parse-price-from-content
+             content
+             [:div.product_price])}))
 
 
 (defn amazon-india-url
@@ -148,26 +178,122 @@
 ;;; TODO How to follow redirects?
 (defn fetch-amazon-india
   [isbn]
-  (log/debug (format "Fetching amazon-india for %s" isbn))
+  (log/debug isbn "Fetching amazon-india")
   (let [url (amazon-india-url isbn)
         content (utils/fetch-page url)]
-    {:priceAmazonIndia (parse-price-from-content
-                        content
-                        [:span.bld.lrg.red])}))
+    {:url url
+     :content content
+     :price (parse-price-from-content
+             content
+             [:span.bld.lrg.red])}))
+
+
+(def stores
+  {:flipkart {:url flipkart-url
+              :parser fetch-flipkart}
+   :infibeam {:url infibeam-url
+              :parser fetch-infibeam}
+   :homeshop18 {:url homeshop18-url
+                :parser fetch-homeshop18}
+   :snapdeal {:url snapdeal-url
+              :parser fetch-snapdeal}})
+
+
+(defn fetch-store
+  [isbn store]
+  (try
+    (let [parser-function (get-in stores [(keyword store) :parser])
+          details (parser-function isbn)]
+      (log/debug isbn "Finished fetching" store)
+      (swap! book-data-cache assoc-in [isbn :price store] (:price details))
+      (when (:info details)
+        (swap! book-data-cache assoc-in [isbn :info] (:info details)))
+      ;; TODO Log :content into MongoDB
+      true)
+    (catch Exception x
+      (do
+        (log/error isbn (str x))
+        (swap! book-data-cache assoc-in [isbn :price store] Integer/MAX_VALUE)
+        false))))
+
+
+;; Idea is this:
+;; Final structure should look like:
+;; book-data-cache = {
+;;   isbn: {
+;;     price: { infibeam: 0, flipkart: 0, ... },
+;;     info: { title: "", author: "", publisher: "", ... }
+;;   },
+;;   ...
+;; }
+;;
+;; Example:
+;; {"9789382618348"
+;;  {:info
+;;   {:title "The Oath of the Vayuputras: Shiva Trilogy 3",
+;;    :imageSource "Flipkart",
+;;    :imageLink "http://www.flipkart.com/books/pr?q=9789382618348&sid=bks&as=off&as-show=off&otracker=start&affid=INSwaroCom",
+;;    :image nil,
+;;    :author "Amish Tripathi",
+;;    :publisher "Westland",
+;;    :year "2013",
+;;    :binding "Paperback"},
+;;   :price
+;;   {"snapdeal" 210.0,
+;;    "homeshop18" 200.0,
+;;    "infibeam" 228.0,
+;;    "flipkart" 179.0}}}
+;;
+;; And this would be sent to the template with slight modifications,
+;; such as sorting by ascending price.
+(defn fetch-all-stores
+  [isbn]
+  (if-not (is-book-in-progress isbn)
+    (do
+      (set-book-in-progress isbn)
+      (log/debug isbn "Launching fetchers")
+      (doseq [f (mapv
+                 #(future (fetch-store isbn %)) (keys stores))]
+        (deref f))
+      (swap! book-data-cache assoc-in [isbn :when] (time/now))
+      ;; There is a race condition here...
+      (done-book-in-progress isbn)
+      (log/debug isbn "Done")
+      (let [data (get @book-data-cache isbn)
+            data (assoc data :isbn isbn)]
+        (mongo/create-new-entry data)
+        data))
+    (do
+      (log/debug isbn "already in progress")
+      nil)))
+
+
+(defn book-data
+  [isbn]
+  (or (mongo/get-recent-entry isbn)
+      (do
+        (future (fetch-all-stores isbn))
+        {:when (time/now)})))
 
 
 (defn book-page
   [isbn]
-  (let [flipkart-details (fetch-flipkart isbn)
-        infibeam-details (fetch-infibeam isbn)
-        homeshop18-details (fetch-homeshop18 isbn)
-        snapdeal-details (fetch-snapdeal isbn)]
-    (mus/render-file "book"
-                     (reduce
-                      merge
-                      {:isbn isbn
-                       :pageTitle (:title flipkart-details)}
-                      [flipkart-details
-                       infibeam-details
-                       homeshop18-details
-                       snapdeal-details]))))
+  (let [data (book-data isbn)
+        price (sort-by val (:price data))
+        price (map #(apply hash-map
+                    [:name (string/capitalize (name (first %)))
+                     :amount (last %)])
+                   price)
+        price (map #(if (= Integer/MAX_VALUE (:amount %))
+                      (merge % {:amount "N/A"}) %)
+                   price)]
+    (mus/render-file
+     "book"
+     (merge
+      data
+      {:price price}))))
+
+
+(def ^:private sample-isbns
+  ["9781449394707"
+   "9789382618348"])

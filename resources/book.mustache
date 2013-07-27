@@ -3,6 +3,7 @@
 <div class="container-fluid">
   <div class="row-fluid">
     <div class="span4 offset2">
+      {{#info}}
       <dl>
         {{#isbn}}
         <dt>ISBN</dt>
@@ -33,9 +34,11 @@
         <dt>Binding</dt>
         <dd>{{binding}}</dd>
         {{/binding}}
+      {{/info}}
       </dl>
     </div>
     <div class="span4">
+      {{#info}}
       <p>
         {{#image}}
           {{#imageLink}}
@@ -49,8 +52,9 @@
           alt="{{title}}"
           title="Image {{#imageSource}}from {{imageSource}}{{/imageSource}} for {{#title}}{{title}}{{/title}}"/>
           {{/imageLink}}
-        {{/image}}
+          {{/image}}
       </p>
+      {{/info}}
     </div>
   </div>
 </div>
@@ -60,36 +64,12 @@
     <div class="span4 offset2">
       <h3>Prices</h3>
       <table class="table table-bordered table-hover">
-        {{#priceFlipkart}}
+        {{#price}}
           <tr>
-            <th>Flipkart</th>
-            <td>{{priceFlipkart}}</td>
-          </tr>
-        {{/priceFlipkart}}
-        {{#priceInfibeam}}
-          <tr>
-            <th>Infibeam</th>
-            <td>{{priceInfibeam}}</td>
-          </tr>
-        {{/priceInfibeam}}
-        {{#priceHomeshop18}}
-          <tr>
-            <th>Homeshop18</th>
-            <td>{{priceHomeshop18}}</td>
-          </tr>
-        {{/priceHomeshop18}}
-        {{#priceSnapdeal}}
-          <tr>
-            <th>Snapdeal</th>
-            <td>{{priceSnapdeal}}</td>
-          </tr>
-        {{/priceSnapdeal}}
-        {{#priceAmazonIndia}}
-          <tr>
-            <th>AmazonIndia</th>
-            <td>{{priceAmazonIndia}}</td>
-          </tr>
-        {{/priceAmazonIndia}}
+          <th>{{name}}</th>
+          <td>{{amount}}</td>
+        </tr>
+        {{/price}}
       </table>
     </div>
   </div>
