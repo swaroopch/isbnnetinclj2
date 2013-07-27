@@ -1,4 +1,4 @@
-(ns isbnnetinclj.handler
+(ns isbnnetinclj2.handler
   (:use compojure.core)
   (:require [compojure.handler :as handler]
             [compojure.route :as route]))
