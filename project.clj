@@ -1,8 +1,8 @@
 (defproject isbnnetinclj2 "0.8"
   :description "A quick way to find the online prices for a book in India"
   :url "http://isbn.net.in"
-  :license {:name "Eclipse Public License"
-            :url "http://www.eclipse.org/legal/epl-v10.html"}
+  :license {:name "Apache License, Version 2.0"
+            :url "https://www.apache.org/licenses/LICENSE-2.0.html"}
   :min-lein-version "2.0.0"
   :dependencies [[org.clojure/clojure "1.5.1"] ; https://github.com/clojure/clojure
                  [compojure "1.1.5"]    ; https://github.com/weavejester/compojure
