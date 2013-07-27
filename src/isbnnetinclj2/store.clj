@@ -56,6 +56,8 @@
      :title (parse-text-from-content
              content
              [:div.mprod-summary-title :h1 html/content])
+     :imageSource "Flipkart"
+     :imageLink url
      :image (get-in (pick-from-content
                      content
                      [:div#mprodimg-id :img])

@@ -28,9 +28,17 @@
     <div class="span4">
       <p>
         {{#image}}
+          {{#imageLink}}
+            <a href="{{imageLink}}"
+              ><img src="{{image}}"
+              alt="{{title}}"
+              title="Image {{#imageSource}}from {{imageSource}}{{/imageSource}} {{#title}}for {{title}}{{/title}}"/></a>
+          {{/imageLink}}
+          {{^imageLink}}
           <img src="{{image}}"
           alt="{{title}}"
-          title="Image from Flipkart for {{title}}"/>
+          title="Image {{#imageSource}}from {{imageSource}}{{/imageSource}} for {{#title}}{{title}}{{/title}}"/>
+          {{/imageLink}}
         {{/image}}
       </p>
     </div>
