@@ -49,11 +49,24 @@
    isbn))
 
 
+;;; TODO Convert keys to keywords
+(defn pick-flipkart-values
+  [content]
+  (apply
+   hash-map
+   (map
+    (comp html/text first :content)
+    (html/select
+     content
+     [:table.fk-specs-type2 #{:td.specs-key :td.specs-value}]))))
+
+
 (defn fetch-flipkart
   [isbn]
   (log/debug (format "Fetching flipkart for %s" isbn))
   (let [url (flipkart-url isbn)
-        content (utils/fetch-page url)]
+        content (utils/fetch-page url)
+        flipkart-values (pick-flipkart-values content)]
     {:isbn isbn
      :title (parse-text-from-content
              content
@@ -66,7 +79,11 @@
                     [:attrs :data-src])
      :priceFlipkart (parse-price-from-content
                       content
-                      [:div.prices :span.fk-font-finalprice])}))
+                      [:div.prices :span.fk-font-finalprice])
+     :author (get flipkart-values "Author")
+     :publisher (get flipkart-values "Publisher")
+     :year (get flipkart-values "Publication Year")
+     :binding (get flipkart-values "Binding")}))
 
 
 (defn book-page
