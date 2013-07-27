@@ -24,4 +24,5 @@
 
 (defn -main []
   (jetty/run-jetty app-routes
-                   {:port (or (System/getenv "PORT") 8080) :join? false}))
+                   {:port (Integer. (or (System/getenv "PORT") 8080))
+                    :join? false}))
