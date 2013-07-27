@@ -34,4 +34,4 @@ This new rewritten version (0.8) is dedicated to:
 
 Copyright © 2010-2013 [Swaroop C H](http://swaroopch.com)
 
-Distributed under the Apache License, Version 2.0 license.
+Distributed under the Apache License, Version 2.0. See the `LICENSE` file.
