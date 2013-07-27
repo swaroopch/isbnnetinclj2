@@ -32,6 +32,6 @@ This new rewritten version (0.8) is dedicated to:
 
 ## License ##
 
-Copyright © 2012-2013 [Swaroop C H](http://swaroopch.com)
+Copyright © 2010-2013 [Swaroop C H](http://swaroopch.com)
 
 Distributed under the Eclipse Public License, the same as Clojure.
