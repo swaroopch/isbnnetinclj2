@@ -3,19 +3,21 @@
             [compojure.handler :as handler]
             [compojure.route :as route]
             [stencil.core :as mus]
-            [ring.adapter.jetty :as jetty]))
+            [ring.adapter.jetty :as jetty]
+            [isbnnetinclj2.store :as store]))
 
-(defn front-page-content
+(defn front-page
   []
   (mus/render-file "frontpage" {:title "isbn.net.in"}))
 
-(defn about-page-content
+(defn about-page
   []
   (mus/render-file "about" {:title "About isbn.net.in"}))
 
 (defroutes app-routes
-  (GET "/" [] (front-page-content))
-  (GET "/about/" [] (about-page-content))
+  (GET "/" [] (front-page))
+  (GET "/about/" [] (about-page))
+  (GET ["/:isbn" :isbn #"[\d-]+[xX]?"] [isbn] (store/book-page isbn))
   (route/resources "/")
   (route/not-found "Not Found"))
 
