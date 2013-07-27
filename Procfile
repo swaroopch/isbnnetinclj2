@@ -1,1 +1,1 @@
-web: lein trampoline run -m isbnnetinclj2.server
+web: lein trampoline run -m isbnnetinclj2.handler

@@ -2,7 +2,8 @@
   (:require [compojure.core :refer :all]
             [compojure.handler :as handler]
             [compojure.route :as route]
-            [stencil.core :as mus]))
+            [stencil.core :as mus]
+            [ring.adapter.jetty :as jetty]))
 
 (defn front-page-content
   []
@@ -20,3 +21,7 @@
 
 (def app
   (handler/site app-routes))
+
+(defn -main []
+  (jetty/run-jetty app-routes
+                   {:port (or (System/getenv "PORT") 8080) :join? false}))

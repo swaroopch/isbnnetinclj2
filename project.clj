@@ -5,6 +5,7 @@
             :url "http://www.eclipse.org/legal/epl-v10.html"}
   :dependencies [[org.clojure/clojure "1.5.1"] ; https://github.com/clojure/clojure
                  [compojure "1.1.5"]    ; https://github.com/weavejester/compojure
+                 [ring/ring-jetty-adapter "1.2.0"] ; https://github.com/ring-clojure/ring
                  [com.taoensso/timbre "2.4.1"] ; https://github.com/ptaoussanis/timbre
                  [com.taoensso/carmine "2.0.0"] ; https://github.com/ptaoussanis/carmine
                  [stencil "0.3.2"]      ; https://github.com/davidsantiago/stencil
@@ -13,6 +14,7 @@
                  [clj-time "0.5.1"]     ; https://github.com/clj-time/clj-time
                  ]
   :plugins [[lein-ring "0.8.5"]]
+  :main isbnnetinclj2.handler
   :ring {:handler isbnnetinclj2.handler/app}
   :profiles
   {:dev {:dependencies [[ring-mock "0.1.5"]]}})
