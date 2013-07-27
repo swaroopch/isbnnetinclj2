@@ -121,11 +121,47 @@
                        [:span#hs18Price])}))
 
 
+(defn snapdeal-url
+  [isbn]
+  (format
+   "http://www.snapdeal.com/search?keyword=%s&santizedKeyword=&catId=&categoryId=364&suggested=false&vertical=p&noOfResults=20&clickSrc=go_header&lastKeyword=&prodCatId=&changeBackToAll=false&foundInAll=false&categoryIdSearched=&cityPageUrl=&url=&utmContent=&catalogID=&dealDetail="
+   isbn))
+
+
+(defn fetch-snapdeal
+  [isbn]
+  (log/debug (format "Fetching snapdeal for %s" isbn))
+  (let [url (snapdeal-url isbn)
+        content (utils/fetch-page url)]
+    {:priceSnapdeal (parse-price-from-content
+                       content
+                       [:div.product_price])}))
+
+
+(defn amazon-india-url
+  [isbn]
+  (format
+   "http://www.amazon.in/s/ref=nb_sb_noss?url=search-alias%%3Dstripbooks&amp;field-keywords=%s"
+   isbn))
+
+
+;;; TODO How to follow redirects?
+(defn fetch-amazon-india
+  [isbn]
+  (log/debug (format "Fetching amazon-india for %s" isbn))
+  (let [url (amazon-india-url isbn)
+        content (utils/fetch-page url)]
+    {:priceAmazonIndia (parse-price-from-content
+                        content
+                        [:span.bld.lrg.red])}))
+
+
 (defn book-page
   [isbn]
   (let [flipkart-details (fetch-flipkart isbn)
         infibeam-details (fetch-infibeam isbn)
-        homeshop18-details (fetch-homeshop18 isbn)]
+        homeshop18-details (fetch-homeshop18 isbn)
+        snapdeal-details (fetch-snapdeal isbn)]
     (mus/render-file "book"
                      (reduce
                       merge
@@ -133,4 +169,5 @@
                        :pageTitle (:title flipkart-details)}
                       [flipkart-details
                        infibeam-details
-                       homeshop18-details]))))
+                       homeshop18-details
+                       snapdeal-details]))))
