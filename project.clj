@@ -3,6 +3,7 @@
   :url "http://isbn.net.in"
   :license {:name "Eclipse Public License"
             :url "http://www.eclipse.org/legal/epl-v10.html"}
+  :min-lein-version "2.0.0"
   :dependencies [[org.clojure/clojure "1.5.1"] ; https://github.com/clojure/clojure
                  [compojure "1.1.5"]    ; https://github.com/weavejester/compojure
                  [ring/ring-jetty-adapter "1.2.0"] ; https://github.com/ring-clojure/ring
