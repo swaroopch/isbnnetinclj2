@@ -103,14 +103,34 @@
                      [:span.infiPrice])}))
 
 
+(defn homeshop18-url
+  [isbn]
+  (format
+   "http://www.homeshop18.com/%s/search:%s/categoryid:10000/"
+   isbn
+   isbn))
+
+
+(defn fetch-homeshop18
+  [isbn]
+  (log/debug (format "Fetching homeshop18 for %s" isbn))
+  (let [url (homeshop18-url isbn)
+        content (utils/fetch-page url)]
+    {:priceHomeshop18 (parse-price-from-content
+                       content
+                       [:span#hs18Price])}))
+
+
 (defn book-page
   [isbn]
   (let [flipkart-details (fetch-flipkart isbn)
-        infibeam-details (fetch-infibeam isbn)]
+        infibeam-details (fetch-infibeam isbn)
+        homeshop18-details (fetch-homeshop18 isbn)]
     (mus/render-file "book"
                      (reduce
                       merge
                       {:isbn isbn
                        :pageTitle (:title flipkart-details)}
                       [flipkart-details
-                       infibeam-details]))))
+                       infibeam-details
+                       homeshop18-details]))))
