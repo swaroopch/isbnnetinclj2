@@ -86,10 +86,31 @@
      :binding (get flipkart-values "Binding")}))
 
 
+(defn infibeam-url
+  [isbn]
+  (format
+   "http://www.infibeam.com/search.jsp?storeName=Books&query=%s"
+   isbn))
+
+
+(defn fetch-infibeam
+  [isbn]
+  (log/debug (format "Fetching infibeam for %s" isbn))
+  (let [url (infibeam-url isbn)
+        content (utils/fetch-page url)]
+    {:priceInfibeam (parse-price-from-content
+                     content
+                     [:span.infiPrice])}))
+
+
 (defn book-page
   [isbn]
-  (let [flipkart-details (fetch-flipkart isbn)]
+  (let [flipkart-details (fetch-flipkart isbn)
+        infibeam-details (fetch-infibeam isbn)]
     (mus/render-file "book"
-                     (merge {:isbn isbn
-                             :pageTitle (:title flipkart-details)}
-                            flipkart-details))))
+                     (reduce
+                      merge
+                      {:isbn isbn
+                       :pageTitle (:title flipkart-details)}
+                      [flipkart-details
+                       infibeam-details]))))
