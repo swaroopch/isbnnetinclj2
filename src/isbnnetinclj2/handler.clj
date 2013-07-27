@@ -8,8 +8,13 @@
   []
   (mus/render-file "frontpage" {:title "isbn.net.in"}))
 
+(defn about-page-content
+  []
+  (mus/render-file "about" {:title "About isbn.net.in"}))
+
 (defroutes app-routes
   (GET "/" [] (front-page-content))
+  (GET "/about/" [] (about-page-content))
   (route/resources "/")
   (route/not-found "Not Found"))
 
