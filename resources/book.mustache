@@ -35,25 +35,33 @@
         <dd>{{binding}}</dd>
         {{/binding}}
       {{/info}}
+      {{^info}}
+      <p><em>Fetching info and prices... page will refresh automatically.</em></p>
+      <script type="text/javascript">
+      window.onload = function() {
+        setTimeout("window.location.reload(true)", 10 * 1000);
+      };
+      </script>
+      {{/info}}
       </dl>
     </div>
     <div class="span4">
       {{#info}}
-      <p>
-        {{#image}}
-          {{#imageLink}}
-            <a href="{{imageLink}}"
-              ><img src="{{image}}"
-              alt="{{title}}"
-              title="Image {{#imageSource}}from {{imageSource}}{{/imageSource}} {{#title}}for {{title}}{{/title}}"/></a>
-          {{/imageLink}}
-          {{^imageLink}}
-          <img src="{{image}}"
-          alt="{{title}}"
-          title="Image {{#imageSource}}from {{imageSource}}{{/imageSource}} for {{#title}}{{title}}{{/title}}"/>
-          {{/imageLink}}
-          {{/image}}
-      </p>
+        <p>
+          {{#image}}
+            {{#imageLink}}
+              <a href="{{imageLink}}"
+                ><img src="{{image}}"
+                alt="{{title}}"
+                title="Image {{#imageSource}}from {{imageSource}}{{/imageSource}} {{#title}}for {{title}}{{/title}}"/></a>
+            {{/imageLink}}
+            {{^imageLink}}
+            <img src="{{image}}"
+            alt="{{title}}"
+            title="Image {{#imageSource}}from {{imageSource}}{{/imageSource}} for {{#title}}{{title}}{{/title}}"/>
+            {{/imageLink}}
+            {{/image}}
+        </p>
       {{/info}}
     </div>
   </div>
@@ -66,7 +74,12 @@
       <table class="table table-bordered table-hover">
         {{#price}}
           <tr>
-          <th>{{name}}</th>
+            {{#url}}
+              <th><a href="{{url}}">{{name}}</a></th>
+            {{/url}}
+            {{^url}}
+              <th>{{name}}</th>
+            {{/url}}
           <td>{{amount}}</td>
         </tr>
         {{/price}}

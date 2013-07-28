@@ -282,7 +282,8 @@
         price (sort-by val (:price data))
         price (map #(apply hash-map
                     [:name (string/capitalize (name (key %)))
-                     :amount (val %)])
+                     :amount (val %)
+                     :url ((get-in stores [(key %) :url]) isbn)])
                    price)
         price (map #(if (= Integer/MAX_VALUE (:amount %))
                       (merge % {:amount "N/A"})
