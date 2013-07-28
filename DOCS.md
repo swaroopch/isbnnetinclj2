@@ -1,4 +1,4 @@
-* Reference Documentation
+# Reference Documentation #
 
 - [Mustache template](http://mustache.github.io/mustache.5.html)
 - [Twitter Bootstrap 2.3.2](http://twitter.github.io/bootstrap/2.3.2/)
