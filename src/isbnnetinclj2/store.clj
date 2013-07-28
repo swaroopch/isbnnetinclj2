@@ -271,10 +271,11 @@
 
 (defn book-data
   [isbn]
-  (or (mongo/get-recent-entry isbn)
-      (do
-        (future (fetch-all-stores isbn))
-        {:when (time/now)})))
+  (or (get @book-data-cache isbn)
+      (or (mongo/get-recent-entry isbn)
+          (do
+            (future (fetch-all-stores isbn))
+            {:when (time/now)}))))
 
 
 (defn book-page
@@ -294,7 +295,8 @@
      "book"
      (merge
       data
-      {:isbn isbn
+      {:pricePresent (> (count price) 0)
+       :isbn isbn
        :pageTitle (or (get-in data [:info :title])
                       isbn)
        :price price}))))
