@@ -11,7 +11,7 @@ If you're curious about the history of the project, see <http://swaroopch.com/ta
 
 ## Usage ##
 
-1. Install [Redis](http://redis.io).
+1. Install [MongoDB](http://www.mongodb.org).
 2. Install [Leiningen 2.x](http://leiningen.org/).
 3. Get dependencies and run:
 
