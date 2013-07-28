@@ -281,9 +281,9 @@
   (let [data (book-data isbn)
         price (sort-by val (:price data))
         price (map #(apply hash-map
-                    [:name (string/capitalize (name (key %)))
-                     :amount (val %)
-                     :url ((get-in stores [(key %) :url]) isbn)])
+                           [:name (string/capitalize (name (key %)))
+                            :amount (val %)
+                            :url ((get-in stores [(key %) :url]) isbn)])
                    price)
         price (map #(if (= Integer/MAX_VALUE (:amount %))
                       (merge % {:amount "N/A"})
@@ -293,7 +293,9 @@
      "book"
      (merge
       data
-      {:pageTitle (get-in data [:info :title])
+      {:isbn isbn
+       :pageTitle (or (get-in data [:info :title])
+                      isbn)
        :price price}))))
 
 

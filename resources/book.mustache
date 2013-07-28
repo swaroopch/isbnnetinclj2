@@ -3,47 +3,47 @@
 <div class="container-fluid">
   <div class="row-fluid">
     <div class="span4 offset2">
-      {{#info}}
       <dl>
         {{#isbn}}
         <dt>ISBN</dt>
         <dd>{{isbn}}</dd>
         {{/isbn}}
 
-        {{#title}}
-        <dt>Title</dt>
-        <dd>{{title}}</dd>
-        {{/title}}
+        {{#info}}
+          {{#title}}
+            <dt>Title</dt>
+            <dd>{{title}}</dd>
+          {{/title}}
 
-        {{#author}}
-        <dt>Author</dt>
-        <dd>{{author}}</dd>
-        {{/author}}
+          {{#author}}
+            <dt>Author</dt>
+            <dd>{{author}}</dd>
+          {{/author}}
 
-        {{#publisher}}
-        <dt>Publisher</dt>
-        <dd>{{publisher}}</dd>
-        {{/publisher}}
+          {{#publisher}}
+            <dt>Publisher</dt>
+            <dd>{{publisher}}</dd>
+          {{/publisher}}
 
-        {{#year}}
-        <dt>Year</dt>
-        <dd>{{year}}</dd>
-        {{/year}}
+          {{#year}}
+            <dt>Year</dt>
+            <dd>{{year}}</dd>
+          {{/year}}
 
-        {{#binding}}
-        <dt>Binding</dt>
-        <dd>{{binding}}</dd>
-        {{/binding}}
-      {{/info}}
-      {{^info}}
+          {{#binding}}
+            <dt>Binding</dt>
+            <dd>{{binding}}</dd>
+          {{/binding}}
+        {{/info}}
+      </dl>
+      {{^price}}
       <p><em>Fetching info and prices... page will refresh automatically.</em></p>
       <script type="text/javascript">
       window.onload = function() {
-        setTimeout("window.location.reload(true)", 10 * 1000);
+        setTimeout("window.location.reload(true)", 20 * 1000);
       };
       </script>
-      {{/info}}
-      </dl>
+      {{/price}}
     </div>
     <div class="span4">
       {{#info}}
@@ -67,12 +67,12 @@
   </div>
 </div>
 
+{{#price}}
 <div class="container-fluid">
   <div class="row-fluid">
     <div class="span4 offset2">
       <h3>Prices</h3>
       <table class="table table-bordered table-hover">
-        {{#price}}
           <tr>
             {{#url}}
               <th><a href="{{url}}">{{name}}</a></th>
@@ -82,10 +82,10 @@
             {{/url}}
           <td>{{amount}}</td>
         </tr>
-        {{/price}}
       </table>
     </div>
   </div>
 </div>
+{{/price}}
 
 {{>footer}}
