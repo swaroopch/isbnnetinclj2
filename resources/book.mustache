@@ -36,14 +36,16 @@
           {{/binding}}
         {{/info}}
       </dl>
-      {{^pricePresent}}
-      <p><em>Fetching info and prices... page will refresh automatically.</em></p>
-      <script type="text/javascript">
-      window.onload = function() {
-        setTimeout("window.location.reload(true)", 20 * 1000);
-      };
+      {{#toRefresh}}
+        {{^pricePresent}}
+        <p><em>Fetching info and prices... page will refresh automatically.</em></p>
+        {{/pricePresent}}
+        <script type="text/javascript">
+        window.onload = function() {
+          setTimeout("window.location.reload(true)", 20 * 1000);
+        };
       </script>
-      {{/pricePresent}}
+      {{/toRefresh}}
     </div>
     <div class="span4">
       {{#info}}

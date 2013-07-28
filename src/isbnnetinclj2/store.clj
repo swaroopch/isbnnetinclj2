@@ -195,8 +195,9 @@
               :parser fetch-infibeam}
    :homeshop18 {:url homeshop18-url
                 :parser fetch-homeshop18}
-   :snapdeal {:url snapdeal-url
-              :parser fetch-snapdeal}})
+   ;; :snapdeal {:url snapdeal-url
+   ;;            :parser fetch-snapdeal}
+   })
 
 
 (defn fetch-store
@@ -257,7 +258,6 @@
                  #(future (fetch-store isbn %)) (keys stores))]
         (deref f))
       (swap! book-data-cache assoc-in [isbn :when] (time/now))
-      ;; There is a race condition here...
       (done-book-in-progress isbn)
       (log/debug isbn "Done")
       (let [data (get @book-data-cache isbn)
@@ -296,6 +296,8 @@
      (merge
       data
       {:pricePresent (> (count price) 0)
+       :toRefresh (or (not (get-in data [:info :title]))
+                      (= (count price) 0))
        :isbn isbn
        :pageTitle (or (get-in data [:info :title])
                       isbn)
