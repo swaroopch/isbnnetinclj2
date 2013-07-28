@@ -208,7 +208,8 @@
       (swap! book-data-cache assoc-in [isbn :price store] (:price details))
       (when (:info details)
         (swap! book-data-cache assoc-in [isbn :info] (:info details)))
-      ;; TODO Log :content into MongoDB
+      (when (:content details)
+        (mongo/save-content isbn store (:content details)))
       true)
     (catch Exception x
       (do

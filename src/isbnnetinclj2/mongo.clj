@@ -42,3 +42,16 @@
   (mc/insert-and-return
    data-collection
    data))
+
+
+(def content-collection "content")
+
+
+(defn save-content
+  [isbn store content]
+  (mc/insert-and-return
+   content-collection
+   {:isbn isbn
+    :when (time/now)
+    :store store
+    :content content}))
