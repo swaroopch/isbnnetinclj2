@@ -281,11 +281,12 @@
   (let [data (book-data isbn)
         price (sort-by val (:price data))
         price (map #(apply hash-map
-                    [:name (string/capitalize (name (first %)))
-                     :amount (last %)])
+                    [:name (string/capitalize (name (key %)))
+                     :amount (val %)])
                    price)
         price (map #(if (= Integer/MAX_VALUE (:amount %))
-                      (merge % {:amount "N/A"}) %)
+                      (merge % {:amount "N/A"})
+                      %)
                    price)]
     (mus/render-file
      "book"
