@@ -292,7 +292,8 @@
      "book"
      (merge
       data
-      {:price price}))))
+      {:pageTitle (get-in data [:info :title])
+       :price price}))))
 
 
 (def ^:private sample-isbns
